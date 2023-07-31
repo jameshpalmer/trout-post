@@ -134,7 +134,7 @@ export function SiteHeader() {
         <HeaderBackground
           image={WaterTexture.src}
           scroll={backgroundScroll}
-          className="dark:-z-10 dark:opacity-30"
+          className="z-10 dark:-z-10 dark:opacity-30"
         />
         <div className="absolute ml-[-125px] h-14 w-[calc(100%+125px)] select-none">
           <AnimatePresence initial={false}>
