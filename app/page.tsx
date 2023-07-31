@@ -73,6 +73,15 @@ export default function IndexPage() {
           <Icons.twitter strokeWidth={1.5} />
         </Link>
         <Link
+          href={siteConfig.links.fpl}
+          aria-label="FPL"
+          className={buttonVariants({ variant: "outline" })}
+        >
+          <p className="font-mono text-lg">
+            FPL
+          </p>
+        </Link>
+        <Link
           href={siteConfig.links.github}
           aria-label="GitHub"
           className={cn(
