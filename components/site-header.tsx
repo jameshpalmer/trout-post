@@ -1,10 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
-  AnimatePresence,
   MotionValue,
   useMotionValueEvent,
   useReducedMotion,
@@ -20,7 +19,7 @@ import Trout1 from "@/public/images/trout-1.svg"
 import Trout2 from "@/public/images/trout-2.svg"
 import WaterTexture from "@/public/images/water-texture.webp"
 
-import { FishToggle } from "./fish-toggle"
+import { FishContext } from "./fish-toggle"
 import { ThemeToggle } from "./theme-toggle"
 
 interface HeaderBackgroundProps {
@@ -90,7 +89,7 @@ function Trout(props: {
 }
 
 export function SiteHeader() {
-  const [showFish, setShowFish] = useState(true)
+  const { showFish } = useContext(FishContext)
   const [reversing, setReversing] = useState(false)
   const [frame, setFrame] = useState<0 | 1 | 2 | 3 | 4 | 5>(0)
 
@@ -145,40 +144,27 @@ export function SiteHeader() {
           className="z-10 dark:-z-10 dark:opacity-30"
         />
         <div className="absolute ml-[-125px] h-14 w-[calc(100%+125px)] select-none">
-          <AnimatePresence initial={false}>
-            {showFish && (
-              <motion.div
-                className="relative h-full motion-reduce:hidden"
-                style={{ x: foregroundScroll }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  duration: 0.1,
-                }}
-              >
-                <div className="absolute flex h-full items-center justify-center text-white">
-                  <Trout frame={frame} reversing={reversing} />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <motion.div
+            className="relative h-full motion-reduce:hidden"
+            style={{ x: foregroundScroll }}
+            animate={{
+              opacity: showFish ? 1 : 0,
+            }}
+            transition={{
+              duration: 0.1,
+            }}
+          >
+            <div className="absolute flex h-full items-center justify-center text-white">
+              <Trout frame={frame} reversing={reversing} />
+            </div>
+          </motion.div>{" "}
         </div>
-        <div className="z-20 flex h-14 flex-1 items-center justify-around font-mono">
+        <div className="z-20 flex h-14 flex-1 items-center justify-around">
           <Link href="/" aria-label="Home">
-            <p className="select-none">
-              <span>trout</span>
-              <motion.span>.</motion.span>
-              <span>fyi</span>
-            </p>
+            <p className="select-none font-mono">trout-post</p>
           </Link>
           <div className="flex items-center justify-center gap-5">
             <ThemeToggle />
-            <FishToggle
-              showFish={showFish}
-              setShowFish={setShowFish}
-              className="motion-reduce:hidden"
-            />
           </div>
         </div>
       </div>

@@ -21,7 +21,7 @@ module.exports = {
     "^@/styles/(.*)$",
     "^@/app/(.*)$",
     "^@/public/(.*)$",
-    "^@/posts/(.*)$",
+    "^@/content/(.*)$",
     "",
     "^[./]",
   ],

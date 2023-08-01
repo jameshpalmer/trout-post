@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation"
+
 import { getPost, getPosts } from "@/lib/mdx-utils"
 import { cn } from "@/lib/utils"
 
@@ -11,6 +13,10 @@ export async function generateStaticParams() {
 export default async function Page({ params }: { params: { slug: string } }) {
   const { slug } = params
   const { content } = await getPost(slug)
+
+  if (!content) {
+    return redirect("/")
+  }
 
   return (
     <section

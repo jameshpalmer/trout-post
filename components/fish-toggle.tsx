@@ -1,21 +1,30 @@
 "use client"
 
-import * as React from "react"
+import { createContext, useContext, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 
 import { Icons } from "./icons"
 
-export function FishToggle(props: {
+export const FishContext = createContext<{
   showFish: boolean
   setShowFish: (showFish: boolean) => void
-  className?: string
-}) {
-  const { showFish, setShowFish } = props
-  const Icon = React.useMemo(
-    () => (showFish ? Icons.fish : Icons.noFish),
-    [showFish]
-  )
+}>({
+  showFish: false,
+  setShowFish: () => {},
+})
+
+export const FishProvider = ({ children }: { children: React.ReactNode }) => {
+  const [showFish, setShowFish] = useState(true)
+
+  const value = useMemo(() => ({ showFish, setShowFish }), [showFish])
+
+  return <FishContext.Provider value={value}>{children}</FishContext.Provider>
+}
+
+export function FishToggle(props: { className?: string }) {
+  const { showFish, setShowFish } = useContext(FishContext)
+  const Icon = useMemo(() => (showFish ? Icons.fish : Icons.noFish), [showFish])
 
   return (
     <Button
@@ -24,7 +33,10 @@ export function FishToggle(props: {
       onClick={() => setShowFish(!showFish)}
       className={props.className}
     >
-      <Icon className="h-[1.5rem] w-[1.3rem]" strokeWidth={1.5} />
+      <Icon
+        className="h-[1.7em] w-[1.7em] md:h-[2em] md:w-[2rem]"
+        strokeWidth={1.5}
+      />
       <span className="sr-only">Toggle Fish</span>
     </Button>
   )
