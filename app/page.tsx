@@ -62,16 +62,6 @@ export default async function IndexPage() {
         >
           <p className="font-mono text-lg">FPL</p>
         </Link>
-        <Link
-          href={siteConfig.links.github}
-          aria-label="GitHub"
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "hidden md:block"
-          )}
-        >
-          <Icons.github strokeWidth={1.5} />
-        </Link>
       </div>
     </section>
   )
