@@ -2,32 +2,14 @@ import Link from "next/link"
 import { Balancer } from "react-wrap-balancer"
 
 import { siteConfig } from "@/config/site"
+import { getPosts } from "@/lib/mdx-utils"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 
-const posts = [
-  {
-    title: "Making FPL Solvers Think About Risk",
-    slug: "making-fpl-solvers-think-about-risk",
-    date: "2023-08",
-    shitpost: false,
-  },
-  {
-    title: "The Last Man in Grass FC (a.k.a. 2024)",
-    slug: "the-last-man-in-grass-fc",
-    date: "2023-08",
-    shitpost: true,
-  },
-  {
-    title: "What We Talk About When We Talk About Variance",
-    slug: "what-we-talk-about-when-we-talk-about-variance",
-    date: "2023-07",
-    shitpost: false,
-  },
-]
+export default async function IndexPage() {
+  const posts = await getPosts()
 
-export default function IndexPage() {
   return (
     <section className="container flex flex-col items-center justify-between gap-6 pb-8 pt-6 md:w-[60%] md:py-10">
       <div className="flex w-full flex-col items-start gap-2">
@@ -48,7 +30,7 @@ export default function IndexPage() {
             <span className="inline-block w-20">Shitpost?</span>
           </header>
           {posts.map((post) => (
-            <Link key={post.slug} href={`/${post.slug}`}>
+            <Link key={post.slug} href={`/blog/${post.slug}`}>
               <div className="flex w-full items-center border-y border-b-0 border-gray-200 py-3 text-xs transition-[background-color] hover:bg-muted active:bg-gray-200 dark:border-gray-800 dark:active:bg-gray-800 sm:text-sm">
                 <span className="w-20 pl-1">{post.date}</span>
                 <span className="flex-1 px-2">
@@ -77,9 +59,7 @@ export default function IndexPage() {
           aria-label="FPL"
           className={buttonVariants({ variant: "outline" })}
         >
-          <p className="font-mono text-lg">
-            FPL
-          </p>
+          <p className="font-mono text-lg">FPL</p>
         </Link>
         <Link
           href={siteConfig.links.github}

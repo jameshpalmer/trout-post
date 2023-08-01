@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -16,6 +16,8 @@ import {
 
 import * as motion from "@/lib/motion"
 import { cn } from "@/lib/utils"
+import Trout1 from "@/public/images/trout-1.svg"
+import Trout2 from "@/public/images/trout-2.svg"
 import WaterTexture from "@/public/images/water-texture.webp"
 
 import { FishToggle } from "./fish-toggle"
@@ -53,26 +55,32 @@ function Trout(props: {
 }) {
   const { frame, reversing, className } = props
 
-  const transform = useMemo(() => {
-    return `${reversing ? "scaleX(-1)" : ""} ${
-      2 <= frame && frame <= 4 ? "" : "scaleY(-1)"
-    }`
-  }, [reversing, frame])
-
-  const imageSrc = useMemo(
-    () => (frame % 3 === 0 ? "/images/trout-1.svg" : "/images/trout-2.svg"),
-    [frame]
-  )
+  const transform = `${reversing ? "scaleX(-1)" : ""} ${
+    2 <= frame && frame <= 4 ? "" : "scaleY(-1)"
+  }`
 
   return (
     <>
       <Image
-        src={imageSrc}
+        src={Trout1}
         alt="Trout"
         width={78}
         height={32}
         className={cn(
           "h-8 rounded-full opacity-20 dark:opacity-100",
+          frame % 3 === 0 ? "" : "hidden",
+          className
+        )}
+        style={{ transform }}
+      />
+      <Image
+        src={Trout2}
+        alt="Trout"
+        width={78}
+        height={32}
+        className={cn(
+          "h-8 rounded-full opacity-20 dark:opacity-100",
+          frame % 3 === 0 ? "hidden" : "",
           className
         )}
         style={{ transform }}
