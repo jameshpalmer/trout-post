@@ -4,6 +4,7 @@ import path from "path"
 import Image, { ImageProps } from "next/image"
 import type { MDXComponents } from "mdx/types"
 import { compileMDX } from "next-mdx-remote/rsc"
+import { Balancer } from "react-wrap-balancer"
 import rehypeKatex from "rehype-katex"
 import remarkMath from "remark-math"
 
@@ -16,7 +17,7 @@ const postsDirectory = path.join(process.cwd(), "posts")
 export const mdxComponents = {
   h1: ({ children, ...props }) => (
     <h1 className={cn("font-mono", props.className)} {...props}>
-      {children}
+      <Balancer>{children}</Balancer>
     </h1>
   ),
   Image: (props: ImageProps) => <Image {...props} />,
