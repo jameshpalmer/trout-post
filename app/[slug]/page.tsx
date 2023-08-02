@@ -7,7 +7,7 @@ import "katex/dist/katex.min.css"
 
 export async function generateStaticParams() {
   const posts = await getPosts()
-  return posts.map((post) => ({ params: { slug: post.slug } }))
+  return posts.map((post) => ({ slug: post.slug }))
 }
 
 export default async function Page({ params }: { params: { slug: string } }) {
