@@ -3,10 +3,7 @@ import fs from "fs"
 import path from "path"
 import Image, { ImageProps } from "next/image"
 import type { MDXComponents } from "mdx/types"
-import { compileMDX } from "next-mdx-remote/rsc"
 import { Balancer } from "react-wrap-balancer"
-import rehypeKatex from "rehype-katex"
-import remarkMath from "remark-math"
 
 import { Post } from "@/types/post"
 
@@ -60,26 +57,4 @@ export async function getPosts() {
       }) as Promise<Post>[]
   )
   return posts.sort((a, b) => (a.date > b.date ? -1 : 1))
-}
-
-export async function getPost(slug: string) {
-  try {
-    const fileContent = fs.readFileSync(
-      path.join(postsDirectory, `${slug}.mdx`),
-      "utf8"
-    )
-
-    return await compileMDX({
-      source: fileContent,
-      components: mdxComponents,
-      options: {
-        mdxOptions: {
-          remarkPlugins: [remarkMath],
-          rehypePlugins: [rehypeKatex],
-        },
-      },
-    })
-  } catch (error) {
-    return { content: null }
-  }
 }

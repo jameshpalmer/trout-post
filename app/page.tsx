@@ -3,7 +3,6 @@ import { Balancer } from "react-wrap-balancer"
 
 import { siteConfig } from "@/config/site"
 import { getPosts } from "@/lib/mdx-utils"
-import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { FishToggle } from "@/components/fish-toggle"
 import { Icons } from "@/components/icons"
