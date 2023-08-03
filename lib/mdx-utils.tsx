@@ -1,6 +1,7 @@
 import "server-only"
 import fs from "fs"
 import path from "path"
+import { HTMLAttributes } from "react"
 import Image, { ImageProps } from "next/image"
 import type { MDXComponents } from "mdx/types"
 import { compileMDX } from "next-mdx-remote/rsc"
@@ -9,40 +10,41 @@ import rehypeKatex from "rehype-katex"
 import remarkMath from "remark-math"
 
 import { Post } from "@/types/post"
+import { FakeTweet, TweetData } from "@/components/fake-tweet"
 
 import { cn } from "./utils"
 
 const postsDirectory = path.join(process.cwd(), "content")
 
 export const mdxComponents = {
-  h1: ({ children, ...props }) => (
+  h1: ({ children, className, ...props }) => (
     <h1
-      className={cn(
-        "font-mono text-2xl sm:text-3xl md:text-4xl",
-        props.className
-      )}
+      className={cn("font-mono text-2xl sm:text-3xl md:text-4xl", className)}
       {...props}
     >
       <Balancer>{children}</Balancer>
     </h1>
   ),
-  h2: ({ children, ...props }) => (
+  h2: ({ children, className, ...props }) => (
     <h2
-      className={cn(
-        "font-mono text-lg sm:text-xl md:text-2xl",
-        props.className
-      )}
+      className={cn("font-mono text-lg sm:text-xl md:text-2xl", className)}
       {...props}
     >
       <Balancer>{children}</Balancer>
     </h2>
   ),
-  p: ({ children, ...props }) => (
-    <p className={cn("text-sm/5 sm:text-base", props.className)} {...props}>
+  p: ({ children, className, ...props }) => (
+    <p className={cn("text-sm/5 sm:text-base", className)} {...props}>
       {children}
     </p>
   ),
   Image: (props: ImageProps) => <Image {...props} />,
+  FakeTweet: ({
+    className,
+    ...props
+  }: TweetData & HTMLAttributes<HTMLDivElement>) => (
+    <FakeTweet className={cn("not-prose", className)} {...props} />
+  ),
 } as MDXComponents
 
 export async function getPosts() {

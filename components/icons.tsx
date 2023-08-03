@@ -9,9 +9,11 @@ import {
   type Icon as LucideIcon,
 } from "lucide-react"
 
+import { cn } from "@/lib/utils"
+
 export type Icon = LucideIcon
 
-function Fish(props: LucideProps) {
+function Fish({ className, ...props }: LucideProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +25,7 @@ function Fish(props: LucideProps) {
       strokeWidth={props.strokeWidth || 2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="lucide lucide-fish"
+      className={cn("lucide lucide-fish", className)}
       {...props}
     >
       <path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z" />
@@ -36,7 +38,7 @@ function Fish(props: LucideProps) {
   )
 }
 
-function NoFish(props: LucideProps) {
+function NoFish({ className, ...props }: LucideProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +50,7 @@ function NoFish(props: LucideProps) {
       strokeWidth={props.strokeWidth || 2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="lucide lucide-fish-off"
+      className={cn("lucide lucide-fish-off", className)}
       {...props}
     >
       <path d="M18 12.47v.03m0-.5v.47m-.475 5.056A6.744 6.744 0 0 1 15 18c-3.56 0-7.56-2.53-8.5-6 .348-1.28 1.114-2.433 2.121-3.38m3.444-2.088A8.802 8.802 0 0 1 15 6c3.56 0 6.06 2.54 7 6-.309 1.14-.786 2.177-1.413 3.058" />
