@@ -79,3 +79,20 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+.tweet-hashtag {
+  color: #1d9bf0;
+  cursor: pointer;
+}
+
+.tweet-hashtag:hover {
+  text-decoration: underline;
+}
+
+.prose:has(+ .prose) {
+  margin-bottom: 1.25em;
+}
+
+.prose {
+  max-width: 70ch;
+}

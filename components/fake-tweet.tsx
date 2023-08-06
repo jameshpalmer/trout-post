@@ -1,16 +1,34 @@
-import { HTMLAttributes } from "react"
+import { HTMLAttributes, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
 
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 
+const dateOptions = {
+  hour: "numeric",
+  minute: "numeric",
+  hour12: true,
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+}
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "numeric",
+  hour12: true,
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+} as Intl.DateTimeFormatOptions)
+
 function LikeIcon({ className, ...props }: HTMLAttributes<SVGElement>) {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="currentColor"
-      className={cn("h-6 w-6 select-none text-red-600", className)}
+      className={cn("h-6 w-6 select-none text-red-500", className)}
       {...props}
     >
       <g>
@@ -25,7 +43,7 @@ function ReplyIcon({ className, ...props }: HTMLAttributes<SVGElement>) {
     <svg
       viewBox="0 0 24 24"
       fill="currentColor"
-      className={cn("h-6 w-6 select-none text-blue-300", className)}
+      className={cn("h-6 w-6 select-none text-blue-400", className)}
       {...props}
     >
       <g>
@@ -48,7 +66,25 @@ export function FakeTweet({
   className,
   ...props
 }: TweetData & HTMLAttributes<HTMLDivElement>) {
-  const date = new Date(props.date)
+  const formattedDateWithInterpunct = useMemo(() => {
+    const date = new Date(props.date)
+    const formattedDate = dateFormatter.format(date)
+    const [day, year, time] = formattedDate.split(", ")
+    return `${time} · ${day}, ${year}`
+  }, [props.date])
+
+  const displayLikes = useMemo(() => {
+    if (props.likes >= 1000) {
+      return `${(props.likes / 1000).toFixed(1)}K`
+    }
+    return props.likes
+  }, [props.likes])
+
+  const displayText = useMemo(
+    () =>
+      props.text.replace(/#(\w+)/g, `<span class="tweet-hashtag">#$1</span>`),
+    [props.text]
+  )
 
   return (
     <Link href={siteConfig.links.twitter} className="not-prose no-underline">
@@ -71,7 +107,7 @@ export function FakeTweet({
               />
             </div>
             <div className="flex flex-col justify-center">
-              <p className="cursor-pointer whitespace-nowrap text-sm sm:text-base">
+              <p className="cursor-pointer whitespace-nowrap text-sm font-semibold sm:text-base">
                 {props.user}
               </p>
               <p className="cursor-pointer whitespace-nowrap text-xs font-light text-gray-500 dark:text-gray-400  sm:text-sm">
@@ -79,7 +115,24 @@ export function FakeTweet({
               </p>
             </div>
           </div>
-          <p className="not-prose text-base font-normal">{props.text}</p>
+          <p
+            className="not-prose text-base font-normal"
+            dangerouslySetInnerHTML={{ __html: displayText }}
+          />
+          <span className="cursor-pointer whitespace-nowrap text-xs font-light text-gray-500 dark:text-gray-400  sm:text-sm">
+            {formattedDateWithInterpunct}
+          </span>
+          <div className="w-full border-b border-gray-200 dark:border-gray-700" />
+          <div className="flex gap-5 pt-1">
+            <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 sm:text-sm">
+              <LikeIcon className="h-5 w-5 sm:h-6 sm:w-6" />
+              <span>{displayLikes}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 sm:text-sm">
+              <ReplyIcon className="h-5 w-5 sm:h-6 sm:w-6" />
+              <span>Reply</span>
+            </div>
+          </div>
         </div>
       </div>
     </Link>

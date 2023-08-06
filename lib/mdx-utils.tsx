@@ -19,7 +19,10 @@ const postsDirectory = path.join(process.cwd(), "content")
 export const mdxComponents = {
   h1: ({ children, className, ...props }) => (
     <h1
-      className={cn("font-mono text-2xl sm:text-3xl md:text-4xl", className)}
+      className={cn(
+        "prose font-mono text-2xl dark:prose-invert sm:text-3xl md:text-4xl",
+        className
+      )}
       {...props}
     >
       <Balancer>{children}</Balancer>
@@ -27,14 +30,23 @@ export const mdxComponents = {
   ),
   h2: ({ children, className, ...props }) => (
     <h2
-      className={cn("font-mono text-lg sm:text-xl md:text-2xl", className)}
+      className={cn(
+        "prose font-mono text-lg dark:prose-invert sm:text-xl md:text-2xl",
+        className
+      )}
       {...props}
     >
       <Balancer>{children}</Balancer>
     </h2>
   ),
   p: ({ children, className, ...props }) => (
-    <p className={cn("text-sm/5 sm:text-base", className)} {...props}>
+    <p
+      className={cn(
+        "prose text-sm/5 dark:prose-invert sm:text-base",
+        className
+      )}
+      {...props}
+    >
       {children}
     </p>
   ),
