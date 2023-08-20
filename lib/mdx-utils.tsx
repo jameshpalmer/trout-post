@@ -10,10 +10,12 @@ import { Balancer } from "react-wrap-balancer"
 import rehypeHighlight from "rehype-highlight"
 import rehypeKatex from "rehype-katex"
 import rehypeSlug from "rehype-slug"
+import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 
 import { Post } from "@/types/post"
 import { FakeTweet, TweetData } from "@/components/fake-tweet"
+import { Icons } from "@/components/icons"
 
 import { cn } from "./utils"
 
@@ -69,13 +71,25 @@ export const mdxComponents = {
   p: ({ children, className, ...props }) => (
     <p
       className={cn(
-        "prose text-sm/5 dark:prose-invert sm:text-base",
+        "prose inline text-sm/5 dark:prose-invert sm:text-base",
         className
       )}
       {...props}
     >
       {children}
     </p>
+  ),
+  a: ({ children, className, ...props }) => (
+    <a className={cn("scroll-m-14", className)} {...props}>
+      {className?.includes("data-footnote-backref") ? (
+        <Icons.cornerDownLeft
+          strokeWidth={1.5}
+          className="mb-1 inline-block h-5 w-5"
+        />
+      ) : (
+        children
+      )}
+    </a>
   ),
   ul: ({ children, className, ...props }) => (
     <ul
@@ -87,6 +101,27 @@ export const mdxComponents = {
     >
       {children}
     </ul>
+  ),
+  ol: ({ children, className, ...props }) => (
+    <ol
+      className={cn(
+        "prose list-inside list-decimal text-sm/5 dark:prose-invert sm:text-base",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </ol>
+  ),
+  section: ({ children, className, ...props }) => (
+    <>
+      {className?.includes("footnotes") && (
+        <div className="mt-7 h-px bg-gray-300 dark:bg-gray-800" />
+      )}
+      <section className={className} {...props}>
+        {children}
+      </section>
+    </>
   ),
   Image: ({ alt, ...props }: ImageProps) => <Image alt={alt} {...props} />,
   FakeTweet: ({
@@ -127,7 +162,7 @@ export async function getPost(slug: string) {
       components: mdxComponents,
       options: {
         mdxOptions: {
-          remarkPlugins: [remarkMath],
+          remarkPlugins: [remarkMath, remarkGfm],
           rehypePlugins: [rehypeKatex, rehypeHighlight, rehypeSlug],
         },
       },

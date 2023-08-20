@@ -1,5 +1,6 @@
 import {
   Check,
+  CornerDownLeft,
   Github,
   LucideProps,
   Moon,
@@ -68,5 +69,6 @@ export const Icons = {
   twitter: Twitter,
   github: Github,
   check: Check,
+  cornerDownLeft: CornerDownLeft,
   x: X,
 }

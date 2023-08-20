@@ -9,57 +9,187 @@ export const meta = {
 The application of stochastic programming to FPL might be the best idea I'll
 ever have. Like most good ideas, it came to me in the shower - I stepped out,
 dried myself off, cursed myself for not thinking of the idea about a year
-earlier, then drew up a diagram and sent it to
+earlier, then discussed the idea with
 [Sertalp Çay](https://twitter.com/sertalpbilal) (who requires no introduction,
 since his online following is a superset of my own).
 
-Within 2 hours, Sertalp had written a comprehensive implementation of the
-algorithm - after another 3 hours, I caught up. Stepping back from the
-particulars and running a few solves, it became evident that we'd taken the
-biggest step forward in our ability to model the FPL problem in years. It felt
-like this was the "right" way to tackle the problems that we'd spent almost all
-of our effort in FPL optimisation trying to solve, struggling to find
-approximations or workarounds (see: time decay, free transfer penalty,
-sensitivity analysis, etc).
+We both shared diagrams mapping the idea, and inside 2 hours Sertalp had written
+a comprehensive implementation of the algorithm - after another 3 hours, I
+caught up.
 
-Here we are, a year and a half later, and stochastic programming has not caught
-on in the FPL analytics community in any capacity. As far as I know - and I'd be
-_thrilled_ to be proven wrong - the number of people who have bothered to write
-an implementation of stochastic programming for FPL is stuck at 2.
+<div className="my-[1.25em] flex items-center justify-center gap-5">
+  <div>
+    <Image
+      className="object-cover object-top"
+      alt="An early stochastic programming diagram"
+      src="/images/stochastic-programming-diagram-2.webp"
+      height={400}
+      width={163}
+    />
+  </div>
+  <div>
+    <Image
+      className="object-cover object-top"
+      alt="An early stochastic programming diagram"
+      src="/images/stochastic-programming-diagram-1.webp"
+      height={400}
+      width={400}
+    />
+  </div>
+</div>
+
+Stepping back from the particulars and running a few solves, it became evident
+that we'd taken the biggest step forward in our ability to model the FPL
+decision process in years. It felt like this was the "right" way to tackle the
+problems that we'd spent almost all of our effort in FPL optimisation trying to
+solve, struggling to find approximations or workarounds (see: time decay, free
+transfer penalty, sensitivity analysis, etc).
+
+Here we are, a year and a half later, and FPL stochastic programming has changed
+the world! Just kidding - it's not caught on in the analytics community in any
+capacity. As far as I know - and I'd be _thrilled_ to be proven wrong - the
+number of people who have bothered to write an implementation of stochastic
+programming for FPL is stuck at 2.
 
 I think one of the reasons for its non-adoption is that stochastic programming
 sounds scary, and there was no great attempt to explain or demonstrate it beyond
 a couple of Twitter threads. Sertalp has
 [hours of Youtube content](https://www.youtube.com/@AlpsCode) explaining other
 concepts and giving detailed implementation tutorials, which I think most FPL
-linear solvers enthusiasts have relied on. This post is an attempt to put this
-right, and provide some missing jigsaw pieces for stochastic programming in FPL.
+linear solvers enthusiasts have relied on.
+
+This post is an attempt to put this right, and provide fragments of
+understanding which may previously have been inaccessible. This post assumes the
+reader has some understanding of FPL analytics, and especially EV in the context
+of FPL - if you haven't yet had the pleasure, I recommend
+[this introduction](https://alpscode.com/blog/intro-to-fpl-analytics/).
 
 ## An explanation ...for anyone interested
 
+### Some background
+
+In this post, I am going to be talking about EV, and not FPL points. This is not
+because I have lost touch with reality, not yet, I promise - quite the opposite.
+
+My goal in FPL is to have control over my distribution of points outcomes;
+usually I try to maximise the mean number of points I am expected to score. This
+is not the only objective one can have in FPL, and is far from the most
+interesting (future posts will demonstrate this, I hope), but it is the most
+popular goal and provides a relatively easy decision process to model.
+
+If you want, you can cleanly split the task of maximising points into two
+distinct problems to be approached independently:
+
+1. Accurately projecting the value of assets
+1. Selecting assets to maximise their combined projected value
+
+To make this division, rather than trying to frame the problem of controlling
+points outcomes some other way, is the essence of the philosophy of EV in FPL. I
+find it an incredibly useful and fun way to think about the game - it is not the
+_only_ way to think about the game, but it is a pragmatic and internally
+consistent system.
+
+I am much more interested in step 2 than step 1, which means I am interested in
+fine-tuning my process _conditional_ on existing projections. Therefore the
+nature of the projections themselves can be marginalised from the equation.
+
+Before we go on, it's probably worth describing what an FPL solver actually
+does, and how it does it.
+
+There is a common belief that the ultimate purpose of an FPL solver is to
+generate a plan, or even a set of plans; I do not agree with this. I think that
+the purpose of an FPL solver is to generate _a decision_. The output we care
+about is the set of actions to be performed before the next deadline - this is a
+lineup order, a captain, a vice-captain, a set of moves, and a chip to be played
+(or no chip at all). This "decision" is more accurately a combination of many,
+many decisions, but since all these decisions are very deeply interdependent I
+will refer to the combination itself as "a decision". This decision will, in the
+case of most solvers, reveal itself as part of a plan, but not necessarily.
+
+**Diagram of a function with an input being a set of FPL decisions**
+
+A solver is composed of a model, and some mechanism for finding an optimal
+solution for the model.
+
+The model contains a set of constraints (e.g. 15 players in a squad, captain
+cannot be vice-captain, etc) and an objective function - a function into which
+we can input decisions, and which will spit out some value describing the
+decisions' quality. The maximum output that the function can yield is called an
+"optimal solution", and the input (i.e. decision) associated with this output is
+an "optimal decision". For example, the most obvious objective function is an
+estimate of the EV we are likely to accumulate over some period if we follow
+through with the input decision.
+
+In the context of FPL solvers, we are much more interested in the input
+corresponding to the optimal solution than the optimal solution itself; in the
+example just given, the objective function has some meaning; however, in
+practice, the objective is usually some heuristic with very little concrete
+meaning.
+
+The mechanism for finding an optimal solution to the model could be one of many
+algorithms, depending on the nature of the model. The models discussed in this
+post (and likely almost every post on this site) are _linear_. It's not really
+necessary to understand what this means, but I'll explain anyway: to satisfy a
+linear model, your constraints and objective can contain decisions multiplied by
+numbers added to other decisions multiplied by numbers, but nothing more. You
+cannot, for example, multiply a decision by a decision. This may seem very
+constraining - how on earth are you supposed to adequately describe a problem as
+complicated as FPL just by adding decisions?! - and it is. However, by keeping
+our models linear, we are able to solve them using some incredibly powerful
+machinery.[^1] Although our language for describing FPL is constrained, we can
+find optimal solutions for linear problems, and prove that they truly are
+optimal, with relative ease. Anyway, FPL is, for the most part, a linear game:
+your decisions (the players we own) are multiplied by numbers (how many points
+they score) and added together - although representing things linearly becomes a
+challenge once we try implementing transfer logic or autosubs, or once we try to
+model anything besides the total number of points scored.
+
 ### The problem
 
-Ever since I came across the EV philosophy and build my first solver, almost
-every alteration and addition I've made to my FPL process over the last few
-years has been motivated by my desire to balance grabbing EV with maintaining
-the ability to react to change.
+Ever since I started thinking about EV and built my first solver, almost every
+alteration I've made to my FPL process over the last few years has been
+motivated by my desire to balance grabbing EV with maintaining the ability to
+react to change.
 
-To allow us to think clearly about "the ability to react to change", I think it
-is useful to split this into two (somewhat overlapping) components:
+To enable us to think clearly about "the ability to react to change", I think it
+can be useful to split this into two (somewhat overlapping) components:
 
-- Knowing when to wait for more information (short-term flexibility)
-- Ensuring the chosen path is robust to change (long-term flexibility)
+- Understanding and accounting for the value of information (short-term
+  flexibility)
+- Ensuring paths are robust to change (long-term flexibility)
 
-FPL solvers are greedy by default; the objective in FPL is to score as many
-points as possible, and the solver can be rather optimistic in its pursuit of
-this objective.
+FPL solvers are greedy by default. The objective in FPL is to score as many
+points as possible, and the solver's pursues this objective optimistically
+without restraint.
 
-To make solvers practical, we have to try to reign in this optimism.
+They are also deterministic; plans are made under an implicit assumption that EV
+in the future is set in stone - in fact, one of the very few things that we can
+be certain of is that the EV of _every_ relevant fantasy asset will change. By
+default, there exists no mechanism to ensure plans are robust to any movement
+likely to occur, or to make different plans based on future scenarios in a
+consistent way.
+
+**Visualisation of uncertain DGW dist'n of outcomes and mean EV**
+
+To make solvers practical, we have to try to reign in this optimism and account
+for the non-deterministic nature of the game.
 
 ### Past solutions (and their problems)
 
-### The solution
+- Free Transfer Penalty
+- Sensitivity analysis
+
+### The new solution
 
 ## ...for practitioners
 
-## ...for nerds
+## ...for losers
+
+[^1]:
+    There are many options when it comes to open-source linear solvers, such as
+    [COIN-OR CBC](https://github.com/coin-or/Cbc),
+    [GLPK](https://www.gnu.org/software/glpk/), and
+    [Google OR-Tools](https://github.com/google/or-tools). For those that who
+    are able to get access (for example, all students and academic faculty),
+    commercial solvers like [Gurobi](https://www.gurobi.com/) can provide
+    significant performance improvements over open-source alternatives.
