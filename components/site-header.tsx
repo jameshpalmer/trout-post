@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import {
   MotionValue,
+  motion,
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
@@ -13,7 +14,6 @@ import {
   useTransform,
 } from "framer-motion"
 
-import * as motion from "@/lib/motion"
 import { cn } from "@/lib/utils"
 import Trout1 from "@/public/images/trout-1.svg"
 import Trout2 from "@/public/images/trout-2.svg"

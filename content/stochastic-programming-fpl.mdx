@@ -1,7 +1,65 @@
 export const meta = {
-  title: "Stochastic Programming in FPL - a Technical Review",
-  date: "2023-08",
+  title: "Stochastic Programming in FPL - a Technical and Non-Technical Review",
+  date: "2023-09",
   shitpost: false,
 }
 
-# Stochastic Programming in FPL - a Technical Review
+# Stochastic Programming in FPL - a Technical and Non-Technical Review
+
+The application of stochastic programming to FPL might be the best idea I'll
+ever have. Like most good ideas, it came to me in the shower - I stepped out,
+dried myself off, cursed myself for not thinking of the idea about a year
+earlier, then drew up a diagram and sent it to
+[Sertalp Çay](https://twitter.com/sertalpbilal) (who requires no introduction,
+since his online following is a superset of my own).
+
+Within 2 hours, Sertalp had written a comprehensive implementation of the
+algorithm - after another 3 hours, I caught up. Stepping back from the
+particulars and running a few solves, it became evident that we'd taken the
+biggest step forward in our ability to model the FPL problem in years. It felt
+like this was the "right" way to tackle the problems that we'd spent almost all
+of our effort in FPL optimisation trying to solve, struggling to find
+approximations or workarounds (see: time decay, free transfer penalty,
+sensitivity analysis, etc).
+
+Here we are, a year and a half later, and stochastic programming has not caught
+on in the FPL analytics community in any capacity. As far as I know - and I'd be
+_thrilled_ to be proven wrong - the number of people who have bothered to write
+an implementation of stochastic programming for FPL is stuck at 2.
+
+I think one of the reasons for its non-adoption is that stochastic programming
+sounds scary, and there was no great attempt to explain or demonstrate it beyond
+a couple of Twitter threads. Sertalp has
+[hours of Youtube content](https://www.youtube.com/@AlpsCode) explaining other
+concepts and giving detailed implementation tutorials, which I think most FPL
+linear solvers enthusiasts have relied on. This post is an attempt to put this
+right, and provide some missing jigsaw pieces for stochastic programming in FPL.
+
+## An explanation ...for anyone interested
+
+### The problem
+
+Ever since I came across the EV philosophy and build my first solver, almost
+every alteration and addition I've made to my FPL process over the last few
+years has been motivated by my desire to balance grabbing EV with maintaining
+the ability to react to change.
+
+To allow us to think clearly about "the ability to react to change", I think it
+is useful to split this into two (somewhat overlapping) components:
+
+- Knowing when to wait for more information (short-term flexibility)
+- Ensuring the chosen path is robust to change (long-term flexibility)
+
+FPL solvers are greedy by default; the objective in FPL is to score as many
+points as possible, and the solver can be rather optimistic in its pursuit of
+this objective.
+
+To make solvers practical, we have to try to reign in this optimism.
+
+### Past solutions (and their problems)
+
+### The solution
+
+## ...for practitioners
+
+## ...for nerds

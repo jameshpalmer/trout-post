@@ -3,13 +3,14 @@ import { Balancer } from "react-wrap-balancer"
 
 import { siteConfig } from "@/config/site"
 import { getPosts } from "@/lib/mdx-utils"
-import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { FishToggle } from "@/components/fish-toggle"
 import { Icons } from "@/components/icons"
 
 export default async function IndexPage() {
   const posts = await getPosts()
+
+  const shitposts = posts.filter((post) => post.shitpost)
 
   return (
     <section className="container flex flex-col items-center justify-between gap-6 pb-8 pt-6 md:w-[60%] md:py-10">
@@ -28,7 +29,9 @@ export default async function IndexPage() {
           <header className="flex w-full py-1 text-sm lowercase text-muted-foreground">
             <span className="w-20 pl-1">Date</span>
             <span className="flex-1 pl-2">Title</span>
-            <span className="inline-block w-20">Shitpost?</span>
+            {shitposts.length ? (
+              <span className="inline-block w-20">Shitpost?</span>
+            ) : null}
           </header>
           {posts.map((post) => (
             <Link key={post.slug} href={`/${post.slug}`}>
@@ -37,11 +40,13 @@ export default async function IndexPage() {
                 <span className="flex-1 px-2">
                   <Balancer>{post.title}</Balancer>
                 </span>
-                <span className="flex w-20 justify-end pr-2">
-                  {post.shitpost && (
-                    <Icons.check strokeWidth={1.5} className="h-5 w-5" />
-                  )}
-                </span>
+                {shitposts.length ? (
+                  <span className="flex w-20 justify-end pr-2">
+                    {post.shitpost && (
+                      <Icons.check strokeWidth={1.5} className="h-5 w-5" />
+                    )}
+                  </span>
+                ) : null}
               </div>
             </Link>
           ))}

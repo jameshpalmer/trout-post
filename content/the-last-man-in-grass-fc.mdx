@@ -2,6 +2,7 @@ export const meta = {
   title: "The Last Man in Grass FC",
   date: "2023-08",
   shitpost: true,
+  draft: true,
 }
 
 # The Last Man in Grass FC
@@ -75,3 +76,42 @@ tweets read:
 
   </div>
 </div>
+
+```jsx
+function FakeTweet({ text, user, handle, avatar, likes, date }) {
+  return (
+    <div className="flex flex-col gap-[1.25em]">
+      <div className="flex gap-[1.25em]">
+        <div className="flex-shrink-0">
+          <Image
+            src={avatar}
+            alt={user}
+            width={50}
+            height={50}
+            className="rounded-full"
+          />
+        </div>
+        <div className="flex flex-col gap-[0.25em]">
+          <div className="flex gap-[0.25em]">
+            <span className="font-bold">{user}</span>
+            <span className="text-gray-500">@{handle}</span>
+            <span className="text-gray-500">·</span>
+            <span className="text-gray-500">
+              {formatDistanceToNow(new Date(date), { addSuffix: true })}
+            </span>
+          </div>
+          <div
+            className="text-gray-900"
+            dangerouslySetInnerHTML={{ __html: text }}
+          />
+        </div>
+      </div>
+      <div className="flex gap-[0.25em]">
+        <span className="text-gray-500">{likes} likes</span>
+        <span className="text-gray-500">·</span>
+        <span className="text-gray-500">1 retweet</span>
+      </div>
+    </div>
+  )
+}
+```

@@ -1,4 +1,5 @@
 import createMDX from "@next/mdx"
+import rehypeHighlight from "rehype-highlight"
 import rehypeKatex from "rehype-katex"
 import remarkMath from "remark-math"
 
@@ -14,7 +15,7 @@ const withMDX = createMDX({
   options: {
     extension: /\.mdx?$/,
     remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [rehypeKatex, rehypeHighlight],
   },
 })
 

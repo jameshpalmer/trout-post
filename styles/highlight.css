@@ -1,0 +1,127 @@
+pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1em;
+}
+code.hljs {
+  padding: 3px 5px;
+}
+
+/*
+Light theme
+*/
+
+.hljs {
+  background: rgb(249 250 251);
+  color: #444;
+}
+.hljs-subst {
+  color: #aaa;
+}
+.hljs-section {
+  color: #fff;
+}
+.hljs-comment,
+.hljs-meta,
+.hljs-quote {
+  color: #444;
+}
+.hljs-bullet,
+.hljs-regexp,
+.hljs-string,
+.hljs-symbol {
+  color: rgb(227, 118, 16);
+}
+:root.dark .hljs-addition,
+:root.dark .hljs-number {
+  color: #0c6;
+}
+.hljs-attribute,
+.hljs-built_in,
+.hljs-link,
+.hljs-literal,
+.hljs-template-variable,
+.hljs-type {
+  color: #32aaee;
+}
+.hljs-keyword,
+.hljs-name,
+.hljs-selector-class,
+.hljs-selector-id,
+.hljs-selector-tag {
+  color: rgb(228, 55, 55);
+}
+.hljs-deletion,
+.hljs-template-tag,
+.hljs-title,
+.hljs-variable {
+  color: rgb(126, 36, 199);
+}
+.hljs-doctag,
+.hljs-section,
+.hljs-strong {
+  font-weight: 700;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+
+/*
+Dark theme
+*/
+
+:root.dark .hljs {
+  background: rgb(17 24 39);
+  color: #aaa;
+}
+
+:root.dark .hljs-subst {
+  color: #444;
+}
+:root.dark .hljs-section {
+  color: #444;
+}
+:root.dark .hljs-comment,
+:root.dark .hljs-meta,
+:root.dark .hljs-quote {
+  color: #444;
+}
+:root.dark .hljs-bullet,
+:root.dark .hljs-regexp,
+:root.dark .hljs-string,
+:root.dark .hljs-symbol {
+  color: rgb(154, 199, 238);
+}
+.hljs-addition,
+.hljs-number {
+  color: #0c6;
+}
+:root.dark .hljs-attribute,
+:root.dark .hljs-built_in,
+:root.dark .hljs-link,
+:root.dark .hljs-literal,
+:root.dark .hljs-template-variable,
+:root.dark .hljs-type {
+  color: #32aaee;
+}
+:root.dark .hljs-keyword,
+:root.dark .hljs-name,
+:root.dark .hljs-selector-class,
+:root.dark .hljs-selector-id,
+:root.dark .hljs-selector-tag {
+  color: rgb(228, 55, 55);
+}
+:root.dark .hljs-deletion,
+:root.dark .hljs-template-tag,
+:root.dark .hljs-title,
+:root.dark .hljs-variable {
+  color: rgb(170, 101, 210);
+}
+:root.dark .hljs-doctag,
+:root.dark .hljs-section,
+:root.dark .hljs-strong {
+  font-weight: 700;
+}
+:root.dark .hljs-emphasis {
+  font-style: italic;
+}

@@ -3,6 +3,9 @@ import { redirect } from "next/navigation"
 import { getPost, getPosts } from "@/lib/mdx-utils"
 import { cn } from "@/lib/utils"
 
+// Syntax highlighting
+import "@/styles/highlight.css"
+// Math typesetting
 import "katex/dist/katex.min.css"
 
 export async function generateStaticParams() {
@@ -24,7 +27,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         "container flex flex-col items-center justify-between gap-6 pb-8 pt-6 md:py-10"
       )}
     >
-      <article className="w-full max-w-[70ch]">{content}</article>
+      <article className="flex w-full max-w-[70ch] flex-col">{content}</article>
     </section>
   )
 }
