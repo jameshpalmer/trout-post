@@ -27,7 +27,10 @@ export default async function Page({ params }: { params: { slug: string } }) {
         "container flex flex-col items-center justify-between gap-6 pb-8 pt-6 md:py-10"
       )}
     >
-      <article className="flex w-full max-w-[70ch] flex-col">{content}</article>
+      {/* [&>*]:mb-5 to be removed when Firefox natively supports :has() */}
+      <article className="flex w-full max-w-[70ch] flex-col [&>:not(:last-child)]:mb-5">
+        {content}
+      </article>
     </section>
   )
 }

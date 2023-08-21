@@ -14,6 +14,12 @@ import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 
 import { Post } from "@/types/post"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { FakeTweet, TweetData } from "@/components/fake-tweet"
 import { Icons } from "@/components/icons"
 
@@ -130,6 +136,10 @@ export const mdxComponents = {
   }: TweetData & HTMLAttributes<HTMLDivElement>) => (
     <FakeTweet className={cn("not-prose", className)} {...props} />
   ),
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
 } as MDXComponents
 
 export async function getPosts() {

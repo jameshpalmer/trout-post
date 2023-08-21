@@ -89,10 +89,12 @@
   text-decoration: underline;
 }
 
-.prose:has(+ .prose) {
-  margin-bottom: 1.25em;
-}
-
 .prose {
   max-width: 70ch;
 }
+
+/* Waiting for Firefox to support :has()...
+.prose:has(+ .prose) {
+  margin-bottom: 1.25em;
+}
+*/

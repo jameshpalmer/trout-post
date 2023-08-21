@@ -17,7 +17,7 @@ We both shared diagrams mapping the idea, and inside 2 hours Sertalp had written
 a comprehensive implementation of the algorithm - after another 3 hours, I
 caught up.
 
-<div className="my-[1.25em] flex items-center justify-center gap-5">
+<div className="flex items-center justify-center gap-5 py-[1em]">
   <div>
     <Image
       className="object-cover object-top"
@@ -68,16 +68,19 @@ of FPL - if you haven't yet had the pleasure, I recommend
 
 ### Some background
 
-In this post, I am going to be talking about EV, and not FPL points. This is not
-because I have lost touch with reality, not yet, I promise - quite the opposite.
+In this post, I am going to be talking about EV, and not FPL points. This is
+because I have lost touch with reality, and I spend my days in an ethereal
+middle realm from whence grass cannot be touched.
 
-My goal in FPL is to have control over my distribution of points outcomes;
-usually I try to maximise the mean number of points I am expected to score. This
-is not the only objective one can have in FPL, and is far from the most
-interesting (future posts will demonstrate this, I hope), but it is the most
-popular goal and provides a relatively easy decision process to model.
+However, allow me to convince you that this manner of thinking makes sense in a
+grass-realm. Let's say, hypothetically, my goal in FPL was to have control over
+my distribution of points outcomes; I would usually try to maximise the mean
+number of points I am expected to score. This is not the only objective one can
+have in FPL, and is far from the most interesting (future posts will demonstrate
+this, I hope), but it is the most popular goal and provides a relatively easy
+decision process to model.
 
-If you want, you can cleanly split the task of maximising points into two
+If I wanted, I could cleanly split the task of maximising points into two
 distinct problems to be approached independently:
 
 1. Accurately projecting the value of assets
@@ -85,13 +88,14 @@ distinct problems to be approached independently:
 
 To make this division, rather than trying to frame the problem of controlling
 points outcomes some other way, is the essence of the philosophy of EV in FPL. I
-find it an incredibly useful and fun way to think about the game - it is not the
-_only_ way to think about the game, but it is a pragmatic and internally
+might find it an incredibly useful and fun way to think about the game - it is
+not the _only_ way to think about the game, but it is a pragmatic and internally
 consistent system.
 
-I am much more interested in step 2 than step 1, which means I am interested in
-fine-tuning my process _conditional_ on existing projections. Therefore the
-nature of the projections themselves can be marginalised from the equation.
+I would be much more interested in step 2 than step 1, which means I would be
+interested in fine-tuning my process _conditional_ on existing projections.
+Therefore the nature of the projections themselves can be marginalised from the
+equation.
 
 Before we go on, it's probably worth describing what an FPL solver actually
 does, and how it does it.
@@ -128,21 +132,38 @@ meaning.
 
 The mechanism for finding an optimal solution to the model could be one of many
 algorithms, depending on the nature of the model. The models discussed in this
-post (and likely almost every post on this site) are _linear_. It's not really
-necessary to understand what this means, but I'll explain anyway: to satisfy a
-linear model, your constraints and objective can contain decisions multiplied by
-numbers added to other decisions multiplied by numbers, but nothing more. You
-cannot, for example, multiply a decision by a decision. This may seem very
-constraining - how on earth are you supposed to adequately describe a problem as
-complicated as FPL just by adding decisions?! - and it is. However, by keeping
-our models linear, we are able to solve them using some incredibly powerful
-machinery.[^1] Although our language for describing FPL is constrained, we can
-find optimal solutions for linear problems, and prove that they truly are
-optimal, with relative ease. Anyway, FPL is, for the most part, a linear game:
-your decisions (the players we own) are multiplied by numbers (how many points
-they score) and added together - although representing things linearly becomes a
-challenge once we try implementing transfer logic or autosubs, or once we try to
-model anything besides the total number of points scored.
+post (and likely almost every post on this site) are _linear_.
+
+<Accordion type="single" collapsible>
+  <AccordionItem value="item-1" className="border-none">
+    <AccordionTrigger className="gap-2 py-0 pr-2 text-left font-normal text-[#374151] hover:no-underline">
+      It's not by any means necessary to understand what linearity means in this
+      context, but if you are genuinely curious, you can click here to find out
+      more.
+    </AccordionTrigger>
+    <AccordionContent className="mt-5">
+      It's possible to think of FPL decisions as variables - owning a player can
+      be a variable with value 1, for example, and not owning them might have
+      value 0. The optimal value of a decision variable is not known before the
+      problem is solved. To satisfy a linear model, your constraints and
+      objective can contain decision variables multiplied by numbers, added to
+      other decision variables multiplied by numbers, but nothing more. You
+      cannot, for example, multiply a decision variable by a decision variable.
+      This may seem very constraining; how on earth are you supposed to
+      adequately describe a problem as complicated as FPL just by adding
+      decisions?!. And it is! However, by keeping our models linear, we are able
+      to solve them using some incredibly powerful machinery.[^1] Although our
+      language for describing FPL is constrained, we can find optimal solutions
+      for linear problems - and prove that they truly are optimal - with
+      relative ease. Anyway, FPL is, for the most part, a linear game: your
+      decisions (the players we own) are multiplied by numbers (how many points
+      they score) and added together - although representing things linearly
+      becomes a challenge once we try implementing transfer logic or autosubs,
+      or once we try to model anything besides the total number of points
+      scored.
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
 
 ### The problem
 
