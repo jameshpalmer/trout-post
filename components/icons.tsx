@@ -62,12 +62,9 @@ function NoFish({ className, ...props }: LucideProps) {
 }
 
 export const Icons = {
-  sun: SunMedium,
-  moon: Moon,
   fish: Fish,
   noFish: NoFish,
   twitter: Twitter,
-  github: Github,
   check: Check,
   cornerDownLeft: CornerDownLeft,
   x: X,

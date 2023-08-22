@@ -14,7 +14,7 @@ about a year earlier, then discussed the idea with
 since his online following is a superset of my own).
 
 We traded diagrams mapping the idea, and inside 2 hours Sertalp had written a
-comprehensive implementation of the algorithm - after another 3 hours, I caught
+comprehensive implementation of the algorithm - it took me another 3 to catch
 up.
 
 <div className="flex items-center justify-center gap-5 py-[1em]">
@@ -52,11 +52,12 @@ number of people who have bothered to write an implementation of stochastic
 programming for FPL is stuck at 2.
 
 I think one of the reasons for its relative non-adoption (compared to inferior
-methods of ensuring flexibility like sensitivity analysis) is a communication
+methods of ensuring flexibility, like sensitivity analysis) is a communication
 problem. Sertalp has
 [hours of Youtube content](https://www.youtube.com/@AlpsCode) explaining other
 concepts and giving detailed implementation tutorials, which I think most FPL
-linear solvers enthusiasts have relied on.
+linear solvers enthusiasts have relied on, but I have done nothing in explaining
+the concept of stochastic programming in FPL beyond an initial Twitter thread.
 
 This post is an attempt to put this right, and provide fragments of
 understanding which may previously have been inaccessible. This post assumes the
@@ -84,49 +85,48 @@ distinct problems to be approached independently:
 1. Selecting assets to maximise their combined projected value
 
 To make this division, rather than trying to frame the problem of controlling
-points outcomes some other way, is the essence of the philosophy of EV in FPL. I
-might find it an incredibly useful and fun way to think about the game - it is
-not the _only_ way to think about the game, but it is a pragmatic and internally
-consistent system.
+points outcomes some other way, is the essence of the philosophy of EV in FPL.
+It is not the _only_ way to think about the game, but it is a pragmatic and
+internally consistent system.
 
-I would be much more interested in step 2 than step 1, which means I would be
-interested in fine-tuning my process _conditional_ on existing projections.
-Therefore the nature of the projections themselves - and, as such, any
-connection to actual value as opposed to expected value - can be marginalised
-from the equation.
+Let's say we are more interested in step 2 than step 1, which means we are
+interested in fine-tuning our process _conditional_ on existing projections.
+Then the nature of the projections themselves - and, as such, any connection to
+actual value as opposed to expected value - can be marginalised from the
+equation.
 
 Before we go on, it's probably worth describing what an FPL solver actually
 does, and how it does it.
 
 There is a common belief that the ultimate purpose of an FPL solver is to
-generate a plan, or even a set of plans; I do not agree with this. I think that
-the purpose of an FPL solver is to generate _a decision_. The output we care
-about is the set of actions to be performed before the next deadline - this is a
-lineup order, a captain, a vice-captain, a set of moves, and a chip to be played
-(or no chip at all). This "decision" is more accurately a combination of many,
-many decisions, but since all these decisions are very deeply interdependent I
-will refer to the combination itself as "a decision". This decision will, in the
-case of most solvers, reveal itself as part of a plan, but not necessarily.
+generate a plan, or even a set of plans; I think this should be considered a
+misconception, albeit a very easy one to slip into. I think that the purpose of
+an FPL solver is instead to generate _a decision_. The output we care about is
+the set of actions to be performed before the next deadline - this is a lineup
+order, a captain, a vice-captain, a set of moves, and a chip to be played (or no
+chip at all). This "decision" is more accurately a combination of many, many
+decisions, but since all these decisions are very deeply interdependent I will
+refer to the combination itself as "a decision". This decision will, in the case
+of most solvers, reveal itself as subset of a plan, but not necessarily.
 
 (Diagram of a function with an input being a set of FPL decisions)
 
 A solver is composed of a model, and some mechanism for finding an optimal
 solution for the model.
 
-The model contains a set of constraints (e.g. 15 players in a squad, captain
-cannot be vice-captain, etc) and an objective function - a function into which
-we can input decisions, and which will spit out some value describing the
-decisions' quality. The maximum output that the function can yield is called an
-"optimal solution", and the input (i.e. decision) associated with this output is
-an "optimal decision". For example, the most obvious objective function is an
-estimate of the EV we are likely to accumulate over some period if we follow
-through with the input decision.
+The model contains a set of constraints (e.g. a squad is limited to 15 players,
+the captain and vice-captain must be different players, etc) and an objective
+function - a function into which we can input decisions, and which will spit out
+some value describing the decisions' quality. The maximum output that the
+function can yield is called an "optimal solution", and the input (i.e.
+decision) associated with this output is an "optimal decision". For example, the
+most obvious objective function is an estimate of the EV we are likely to
+accumulate over some period if we follow through with the input decision.
 
 In the context of FPL solvers, we are much more interested in the input
 corresponding to the optimal solution than the optimal solution itself; in the
-example just given, the objective function has some meaning; however, in
-practice, the objective is usually some heuristic with very little concrete
-meaning.
+example just given, the objective value has some meaning; however, in practice,
+the objective is usually some heuristic with very little concrete meaning.
 
 The mechanism for finding an optimal solution to the model could be one of many
 algorithms, depending on the nature of the model. The models discussed in this
@@ -135,41 +135,42 @@ post (and likely almost every post on this site) are _linear_.
 <Accordion type="single" collapsible>
   <AccordionItem value="item-1" className="border-none">
     <AccordionTrigger className="gap-2 py-0 pr-2 text-left font-normal text-[#374151] hover:no-underline">
-      It's not by any means necessary to understand what linearity means in this
-      context, but if you are genuinely curious, you can click here to find out
-      more.
+      It's not necessary to understand what a linear solver to understand
+      stochastic programming, but if you are genuinely curious, you can click
+      here to find out more.
     </AccordionTrigger>
     <AccordionContent>
       <br />
-      Think of FPL decisions as variables: owning a player can be a variable with
-      value 1, for example, and not owning them might have value 0. The optimal value
-      of a decision variable is not known before the problem is solved. To satisfy
-      a linear model, your constraints and objective can contain decision variables
-      multiplied by numbers, added to other decision variables multiplied by numbers,
-      but nothing more. You cannot, for example, multiply a decision variable by
-      a decision variable. This may seem very constraining; how on earth are you
-      supposed to adequately describe a problem as complicated as FPL just by adding
-      decisions?!. And it is! However, by keeping our models linear, we are able
-      to solve them using some incredibly powerful machinery.[^2] Although our language
-      for describing FPL is constrained, we can find optimal solutions for linear
-      problems - and prove that they truly are optimal - with relative ease. Anyway,
-      FPL is, for the most part, a linear game: your decisions (the players we own)
-      are multiplied by numbers (how many points they score) and added together -
-      although representing things linearly becomes a challenge once we try implementing
-      transfer logic or autosubs, or once we try to model anything besides the total
-      number of points scored.
+      Think of your FPL decisions as variables: owning a player can be a variable
+      with value 1, for example, and not owning them might have value 0. The optimal
+      value of a decision variable is not known before the problem is solved. To
+      satisfy a linear model, your constraints and objective can contain decision
+      variables multiplied by numbers, added to other decision variables multiplied
+      by numbers, but nothing more. You cannot, for example, multiply a decision
+      variable by a decision variable. This may seem very constraining; how on earth
+      are you supposed to adequately describe a problem as complicated as FPL just
+      by adding decisions?!. And it is! However, by keeping our models linear, we
+      are able to solve them using some incredibly powerful machinery.[^2] Although
+      our language for describing FPL is constrained, we can find optimal solutions
+      for linear problems - and prove that they truly are optimal - with relative
+      ease. Anyway, FPL is, for the most part, a linear game: your decisions (the
+      players we own) are multiplied by numbers (how many points they score) and
+      added together - although representing things linearly becomes a challenge
+      once we try implementing transfer logic or autosubs, or once we try to model
+      anything besides the total number of points scored.
     </AccordionContent>
   </AccordionItem>
 </Accordion>
 
 ### The problem
 
-Ever since I started using a solver to help me play FPL, almost every alteration
-I've made to my FPL process has been motivated by my desire to balance grabbing
-EV with maintaining the ability to react to change.
+Ever since I started using a solver for FPL, almost every alteration I've made
+to my model has been motivated by my desire to balance grabbing EV with
+maintaining the ability to react to change.
 
-To enable us to think clearly about "the ability to react to change", I think it
-can be useful to split this into two (somewhat overlapping) components:
+There are many ways to frame "the ability to react to change", but I think some
+clarity can derived from splitting this the concept into two (potentially
+overlapping) components:
 
 - Understanding and accounting for the value of information (short-term
   flexibility)
