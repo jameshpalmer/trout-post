@@ -20,7 +20,7 @@ up.
 <div className="flex items-center justify-center gap-5 py-[1em]">
   <div>
     <Image
-      className="object-cover object-top"
+      className="object-cover object-top dark:invert"
       alt="An early stochastic programming diagram"
       src="/images/stochastic-programming-diagram-2.webp"
       height={217}
@@ -29,7 +29,7 @@ up.
   </div>
   <div>
     <Image
-      className="object-cover object-top"
+      className="object-cover object-top dark:invert"
       alt="An early stochastic programming diagram"
       src="/images/stochastic-programming-diagram-1.webp"
       height={217}
@@ -135,27 +135,27 @@ post (and likely almost every post on this site) are _linear_.
 <Accordion type="single" collapsible>
   <AccordionItem value="item-1" className="border-none">
     <AccordionTrigger className="gap-2 py-0 pr-2 text-left font-normal text-[#374151] hover:no-underline">
-      It's not necessary to understand what a linear solver to understand
-      stochastic programming, but if you are genuinely curious, you can click
-      here to find out more.
+      It's not necessary to understand linearity to grasp stochastic
+      programming, but if you are genuinely curious, you can click here to find
+      out more.
     </AccordionTrigger>
     <AccordionContent>
       <br />
       Think of your FPL decisions as variables: owning a player can be a variable
-      with value 1, for example, and not owning them might have value 0. The optimal
-      value of a decision variable is not known before the problem is solved. To
-      satisfy a linear model, your constraints and objective can contain decision
-      variables multiplied by numbers, added to other decision variables multiplied
-      by numbers, but nothing more. You cannot, for example, multiply a decision
-      variable by a decision variable. This may seem very constraining; how on earth
-      are you supposed to adequately describe a problem as complicated as FPL just
-      by adding decisions?!. And it is! However, by keeping our models linear, we
-      are able to solve them using some incredibly powerful machinery.[^2] Although
-      our language for describing FPL is constrained, we can find optimal solutions
-      for linear problems - and prove that they truly are optimal - with relative
-      ease. Anyway, FPL is, for the most part, a linear game: your decisions (the
-      players we own) are multiplied by numbers (how many points they score) and
-      added together - although representing things linearly becomes a challenge
+      with value 1, for example, and not owning them might have value 0. An optimal
+      value of a decision variable is not known before the an optimal solution is
+      found. To satisfy a linear model, your constraints and objective may contain
+      decision variables multiplied by numbers, added to other decision variables
+      multiplied by numbers, but nothing more. You cannot, for example, multiply
+      a decision variable by a decision variable. This may seem very constraining;
+      how on earth are you supposed to adequately describe a problem as complicated
+      as FPL just by adding decisions?!. And it is! However, by keeping our models
+      linear, we are able to solve them using some incredibly powerful machinery.[^2]
+      Although our language for describing FPL is constrained, we can find optimal
+      solutions for linear problems - and prove that they truly are optimal - with
+      relative ease. Anyway, FPL is, for the most part, a linear game: your decisions
+      (the players we own) are multiplied by numbers (how many points they score)
+      and added together - although representing things linearly becomes a challenge
       once we try implementing transfer logic or autosubs, or once we try to model
       anything besides the total number of points scored.
     </AccordionContent>
@@ -164,9 +164,8 @@ post (and likely almost every post on this site) are _linear_.
 
 ### The problem
 
-Ever since I started using a solver for FPL, almost every alteration I've made
-to my model has been motivated by my desire to balance grabbing EV with
-maintaining the ability to react to change.
+Almost every alteration I make to my model has been motivated by my desire to
+balance grabbing EV with maintaining the ability to react to change.
 
 There are many ways to frame "the ability to react to change", but I think some
 clarity can derived from splitting this the concept into two (potentially
@@ -184,8 +183,8 @@ They are also deterministic; strategies are developed by solvers under an
 implicit assumption that EV in the future is set in stone - in fact, one of the
 very few things that we can be certain of is that the EV of _every_ relevant
 fantasy asset will change. Without modification, there exists no mechanism to
-ensure future plans are robust to any movement likely to occur, nor does there
-exist any way to make different plans for different future scenarios in a
+ensure future plans are robust to new information or unexpected events, nor does
+there exist any way to make different plans for different future scenarios in a
 consistent way.
 
 (Visualisation of uncertain DGW dist'n of outcomes and mean EV)
@@ -195,8 +194,33 @@ for the non-deterministic nature of the game.
 
 ### Past solutions (and their problems)
 
-- Free Transfer Penalty
-- Sensitivity analysis
+- A **Free Transfer Penalty** is a bone-headed but pragmatic way to make the
+  solver less greedy. Effectively it says "If you hold off on making a move when
+  there is one available, I'll give you $p$ extra points".
+
+  |                                                                                                                                                                                                                                                                                   <p className="m-0 text-2xl cursor-default">👍</p>                                                                                                                                                                                                                                                                                    |                                                                                                                                                                                                                                                                                 <p className="m-0 text-2xl cursor-default">👎</p>                                                                                                                                                                                                                                                                                  |
+  | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+  | The penalty provides an incentive to roll a single transfer in the current gameweek (for short-term flexibility), but the concept comes into its own when applied indiscriminately to future GWs - _even when 2 transfers are available_. Using the penalty in this way leads to plans which don't use all available transfers, i.e. which plan to burn transfers. These "skeleton plans" have only the essence of a plan booked in, and gaps elsewhere. Plans generated with this penalty are more robust to new information in the long-term than plans without, as associated plans are simpler and more pragmatic. | The penalty is a simple solution to an over-simplified version of the flexibility problem. It isn't enough to have gaps to fill in; often change will be so extreme that whole plans get thrown out the window. The free transfer penalty alone is unable to provide robustness for situations where extreme flexibility is required, except in suggesting not to plan ahead at all. _"What is the value of $p$"_, you might ask? _"About 1.5"_ I might answer, before refusing to elaborate. The truth is that a well-tuned penalty is dynamic, and there is no scientific way to calculate it at any given time. |
+
+  All in all, the free transfer penalty is a handy trick for quick-and-dirty
+  solves, but it does not provide a comprehensive solution.<br/><br/>
+
+- **Sensitivity analysis** is a slightly more sophisticated attempt. Assets' EV
+  can be liable to change in unexpected ways over time, due to
+  increasing/decreasing minutes expectations for example, or perhaps changes to
+  our estimates of players' underlying production rates. All these changes are
+  realisations of an accumulation of information.[^3] In sensitivity analysis,
+  we model this change and simulate many instances of information realisations.
+  A solve is performed on each realisation, and the more common solutions are
+  considered the more robust (Find out more
+  [here](https://www.youtube.com/watch?v=qJh3hRcM_7g)).
+
+  |                                                                                                                  <p className="m-0 text-2xl cursor-default">👍</p>                                                                                                                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <p className="m-0 text-2xl cursor-default">👎</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+  | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+  | By simulating scenarios, we can exploit any understanding we have of the distribution of unknown information. For example, suppose we know of a 50% likely double gameweek in 2 GWs time. We can run half of our information simulations with the double realised, and half without. | The nature of sensitivity analysis is more deterministic than it ought to be. Each generated scenario corresponds to a single realisation of information, and, from the perspective of a given point in time in a scenario, the future of the information realisation is known - this is to say each scenario is deterministic, and therefore an imperfect model of the FPL decision process. The aggregate of these imperfect models is another, more balanced, imperfect model. The nature of the aggregation itself is also problematic: the best insight we can extract from sensitivity analysis is _"Asset $A$ seems to appear in optimal plans ~$Y\%$ of the time"_. Is $A$ really an essential component of these plans? How much worse are optimal plans which exclude $A$? What if, when $A$ appears in optimal plans, it makes it barely, but when they exclude $A$ they do so comfortably? <p className="text-md m-0 inline-block">**WHAT THEN?**</p> Sensitivity analysis has no answer for such questions, because it describes modal outcomes rather than the expected outcome. Insights like "Asset $A$ works especially well with asset $B$" are possible to extract, but very tedious to do so. |
+
+  As the loser who built the first model for sensitivity analysis in FPL, I feel
+  qualified to say that it should have been the last.
 
 ### The new solution
 
@@ -228,3 +252,5 @@ for the non-deterministic nature of the game.
     are able to get access (for example, all students and academic faculty),
     commercial solvers like [Gurobi](https://www.gurobi.com/) can provide
     significant performance improvements over open-source alternatives.
+
+[^3]: Try saying that ten times fast.
