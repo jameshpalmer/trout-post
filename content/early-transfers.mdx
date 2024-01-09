@@ -1,0 +1,233 @@
+export const meta = {
+  title: "Evaluating Early Transfers: A Worked Example",
+  date: "2024-01",
+  shitpost: false,
+  draft: false,
+}
+
+# The Early Bird Gets The Turd - Analysing Early Transfers
+
+_Let me transport you back in time..._
+
+A richer time, when discourse was filled with hope and optimism for the promise
+of a better future that was ultimately never fulfilled. A time when
+[dinosaurs](https://twitter.com/FplSigurd) walked the earth.
+
+A time when Jarrod Bowen cost 7.9m to own in FPL, and Manchester City vs Watford
+held the record for the highest-xG game in Premier League history.
+
+_New Year's Eve 2023_.
+
+I've taken you here to perform a real analysis of the value of early transfers!
+And I think I'll attempt to convince you why - in my opinion - much of what you
+think you think about them is (probably) wrong.
+
+<Link
+  className="flex justify-center"
+  href="https://twitter.com/FF_Trout/status/1744824689136894323"
+>
+  <Tweet id="1744824689136894323" />
+</Link>
+
+## The Situation
+
+As I lace my boots and prepare for a hard night of boozing, my FPL team looks
+like this:
+
+<div className="flex justify-center">
+  <Image
+    className="object-cover object-top py-2"
+    alt="An FPL team from 31st December 2023"
+    src="/images/fpl-team-31-dec.webp"
+    height={217}
+    width={163}
+  />
+</div>
+
+Being addicted to FPL as I am, I can't help but delay my outing to run a few
+dozen fairly heavy
+[stochastic](https://twitter.com/FF_Trout/status/1514746992282505222) solves
+across DGW scenarios for GW21 moves. With Salah off for AFCON, and Haaland
+returning to fitness in the next 2 GWs, several obvious candidate moves emerge:
+
+<div className="flex w-full flex-col items-center justify-center gap-2">
+  <div className="flex w-full justify-center gap-2">
+    <p className="font-mono text-lg">1. Salah -> Bowen</p>
+    <p className="font-mono text-lg text-muted-foreground">(Obj. ~458.6)</p>
+  </div>
+  <div className="flex w-full justify-center gap-2">
+    <p className="font-mono text-lg">2. Salah -> B.Fernandes</p>
+    <p className="font-mono text-lg text-muted-foreground">(Obj. ~457.6)</p>
+  </div>
+  <div className="flex w-full justify-center gap-2">
+    <p className="font-mono text-lg">3. Salah -> Douglas Luiz</p>
+    <p className="font-mono text-lg text-muted-foreground">(Obj. ~457.4)</p>
+  </div>
+  <div className="flex w-full justify-center gap-2">
+    <p className="font-mono text-lg">...</p>
+  </div>
+</div>
+
+Any of these moves can be combined with J.Alvarez -> Haaland in the case the
+Norwegian was confirmed fit for GW21.
+
+Salah -> Bowen is, according to my solver (and therefore according to me), the
+best move. Bowen is expected to rise in price a couple of times before the GW21
+deadline, and Salah to fall a couple of times, so a permanent team value swing
+of 0.2m is probably on the cards. I also notice in my solves that Salah -> Bowen
+almost always remains part of the optimal combination of present moves
+regardless of injuries (and many combinations of injuries) to relevant FPL
+assets (excluding, of course, Bowen himself).
+
+Given what we know here, can we measure the justification for going early?
+
+## The Approach
+
+As far as I'm aware, there is no good framework for precisely estimating the EV
+(expected value) of an early transfer.
+
+$$
+\textrm{EV}_{\textrm{Early Transfer}} = \textrm{EV}_{\textrm{Team Value Gained}} - \textrm{EV}_{\textrm{Info Lost}}
+$$
+
+In the above formula, if $\textrm{EV}_{\textrm{Early Transfer}}$ evaluates to
+$>0$, the early transfer can be considered worthwhile. While true, this formula
+is not very useful, because the value of information is very difficult to
+quantify.
+
+However, if we can put an upper bound ($\textrm{UB}$) on the value of
+information, we can produce a lower bound ($\textrm{LB}$) on the value of an
+early transfer:
+
+$$
+\textrm{LB}_{\textrm{Early Transfer}} = \textrm{EV}_{\textrm{Team Value Gained}} - \textrm{UB}_{\textrm{Info Lost}}
+$$
+
+Again, if $\textrm{LB}_{\textrm{Early Transfer}}$ evaluates to $>0$, the early
+transfer can be considered at least worthwhile. This formula is more useful,
+because we can often bound the value of information from above.
+
+## The Value of Team Cost
+
+To calculate the value of gaining team value, we can study how many more points
+we can expect to score with more team value, and measure the marginal value of
+added value:
+
+<div className="flex justify-center">
+  <Image
+    className="object-cover object-top py-2 dark:-hue-rotate-180 dark:invert"
+    alt="An FPL team from 31st December 2023"
+    src="/images/value-for-money.webp"
+    height={500}
+    width={1000}
+  />
+</div>
+
+Right now, the marginal value of added team value is about 0.3 points per GW for
+each additional 1m. This number has remained pretty static through the course of
+this season, so I think it's pretty reasonable to assume it will hold.
+
+We expected to permanently gain at least 0.2m from making the Salah -> Bowen
+move early, and there are 18 GWs left of the season.
+
+In total, we expect to gain at least $0.2 \times 0.3 \times 18 = \bold{1.08}$
+points from the early transfer.
+
+## The Upper Bound of the Value of Information
+
+An upper bound for the value of the information we're losing by making the early
+transfer is the number of points lost in the worst-possible realisation of
+information at the GW21 deadline, multiplied by an upper bound for the
+probability of any information realisations at the GW21 deadline which exclude
+Salah -> Bowen from the optimal set of transfers.
+
+### How often can we expect a worse-than-expected realisation of information?
+
+As I mentioned in my description of [the situation](#the-situation), I noticed
+that Salah -> Bowen appeared in plenty of plans containing injuries and
+combinations of injuries to relevant FPL assets.
+
+Obviously, we don't want Bowen if he gets injured. So what is chance he does get
+injured?
+
+Well,
+
+| Injury Type | From       | Until      | Days Out |
+| ----------- | ---------- | ---------- | -------- |
+| Knee        | 2017-12-03 | 2017-12-15 | 12       |
+| Muscle      | 2018-02-11 | 2018-02-22 | 11       |
+| Foot        | 2018-04-08 | 2018-04-13 | 5        |
+| Leg         | 2018-07-11 | 2018-07-12 | 1        |
+| Leg         | 2019-01-20 | 2019-01-25 | 5        |
+| Knee        | 2019-01-27 | 2019-02-01 | 5        |
+| Knock       | 2020-07-23 | 2020-07-25 | 2        |
+| Achilles    | 2022-03-06 | 2022-04-02 | 27       |
+| Knee        | 2023-11-18 | 2023-12-03 | 15       |
+| **Total**   |            |            | **83**   |
+
+So, Jarrod Bowen has been unexpectedly absent for 83 days of football in the
+last 6 seasons of football. The football season is about 9 months long, so
+that's about 5% of the time.
+
+You could argue that the probability he misses GW21 is lower than 5%, because he
+is not currently injured and there is probably a 14-day rest between West Ham's
+FA Cup tie and their GW21 fixture. But we're after an upper bound here, so let's
+say it's not just not lower than 5%, but in fact 10% since Bowen has played more
+minutes than usual in the last few months.
+
+Besides Bowen, there are some rare combinations of injuries that exclude Bowen
+from the optimal plan. For example, if three defenders get injured, or both GKs
+get injured. Again, let's be very generous here since we're after an upper
+bound, and again say there is a 10% chance of other injuries that would drive us
+away from the Salah -> Bowen path.
+
+So, in total, the upper bound we'll use for the probability of a worse-than-
+expected realisation of information is about
+$1 - (1 - 10\%) \times (1 - 10\%) = \bold{19\%}$.
+
+### What is the worst-possible realisation of information?
+
+The worst-case scenario is that we have to immediately revert the Salah -> Bowen
+move, with a hit. This will cost us **4 points**, no more, no less.
+
+So, a reasonable upper bound for the value of information lost is
+$4 \times 19\% = \bold{0.76}$ points.
+
+## Summary
+
+Let's go back to our equation for the lower bound of the value of the early
+transfer:
+
+$$
+\textrm{LB}_{\textrm{Early Transfer}} = \textrm{EV}_{\textrm{Team Value Gained}} - \textrm{UB}_{\textrm{Info Lost}}
+$$
+
+$$
+\approx 1.08 - 0.76
+$$
+
+$$
+\gt 0
+$$
+
+This suggests that on New Year's Eve 2023, the early transfer is not only
+justifiable, but probably the "correct" decision - if you agree with my
+definition of "correct", at least!
+
+This analysis contains some flaws & limits:
+
+- EV movement can occur before the GW21 deadline for reasons besides injuries,
+  such as movement in the betting market. However, we can assume that such
+  movement should occur in both directions, and approximately cancel out.
+
+- This applies to my team only. Planning to hold only one player from Liverpool,
+  Brighton, and Newcastle in GW21 helps to minimise the risk of combinations of
+  injuries that radically alter the optimal plan. That said, I think that a
+  sufficient amount of the above analysis holds for almost any manager who
+  considered moving early that I would find it difficult to call it an
+  objectively "bad" move for any team.
+
+## So, What Did I Do?
+
+I didn't have time to think this out, so I decided instead to leave my bedroom
+and get a life, for a few hours at least.

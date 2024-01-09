@@ -6,6 +6,7 @@ import Image, { ImageProps } from "next/image"
 import Link from "next/link"
 import type { MDXComponents } from "mdx/types"
 import { compileMDX } from "next-mdx-remote/rsc"
+import { Tweet } from "react-tweet"
 import { Balancer } from "react-wrap-balancer"
 import rehypeHighlight from "rehype-highlight"
 import rehypeKatex from "rehype-katex"
@@ -129,7 +130,9 @@ export const mdxComponents = {
       </section>
     </>
   ),
-  Image: ({ alt, ...props }: ImageProps) => <Image alt={alt} {...props} />,
+  Link,
+  Image,
+  Tweet,
   FakeTweet: ({
     className,
     ...props
